@@ -21,15 +21,20 @@ checkNotifications:
 note:=""
 wb.navToUrl(notificationsURL)
 try{
-    notifList:=wb.wb.document.getElementsByClassName("topiclist cplist two-columns")[0].getElementsByTagName("li")
+    notifList:=wb.wb.document.getElementsByClassName("topiclist cplist two-columns")[0].getElementsByTagName("li") ; notification list
     loop % notifList.length
     {
-        isNew:=notifList[a_index-1].getElementsByTagName("input")[0].getAttribute("disabled",2)
+        noteInfo:=noteReason:=noteTimestamp:=""
+        isNew:=notifList[a_index-1].getElementsByTagName("input")[0].getAttribute("disabled",2) ; check for disabled checkbox
         if(isNew)
             continue
-        noteInfo:=notifList[a_index-1].getElementsByTagName("p")[0].innerText
+        noteInfo:=notifList[a_index-1].getElementsByTagName("p")[0].innerText ; notification header
         noteTimestamp:=notifList[a_index-1].getElementsByTagName("p")[1].innerText
-        note.=noteInfo . "`n" . noteTimestamp . "`n`n`n"
+        if(inStr(noteInfo,"Topic approval")||inStr(noteInfo,"Post reported")){ ; check for mod post, correctly return timestamp and reason
+            noteReason:=noteTimestamp
+            noteTimestamp:=notifList[a_index-1].getElementsByTagName("p")[2].innerText
+        }            
+        note.=noteInfo . "`n" . (noteReason?noteReason . "`n":"") . noteTimestamp . "`n`n`n"
     }
 }
 catch
