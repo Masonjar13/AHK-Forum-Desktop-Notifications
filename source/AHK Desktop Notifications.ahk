@@ -2,8 +2,14 @@
 #persistent
 #include *i <Lib_1>
 #include <IEObj>
+#include <crypt>
+
 loginURL:="https://autohotkey.com/boards/ucp.php?mode=login"
 notificationsURL:="https://autohotkey.com/boards/ucp.php?i=ucp_notifications"
+
+; credentials (use cryptLogin.ahk)
+user:=
+pass:=
 
 ; gui
 gui,add,edit,vnotes r10 w400 readonly
@@ -11,9 +17,23 @@ gui,add,edit,vnotes r10 w400 readonly
 wb:=new IEObj
 wb.init()
 wb.navToUrl(loginURL)
-wb.wb.visible:=1
-msgbox,,Login,Log in then press OK to continue.
-wb.wb.visible:=0
+;wb.wb.visible:=1
+
+; login
+cr:=decryptLogin(user,pass)
+try {
+    wb.wb.document.getElementById("username").value:=cr.user
+    wb.wb.document.getElementById("password").value:=cr.pass
+    wb.wb.document.getElementsByClassName("button1")[0].click()
+    wb.waitLoad()
+}catch{
+    cr:=""
+    msgbox,,Error,There was a problem logging in.
+    exitApp
+}
+cr:=""
+;msgbox,,Login,Log in then press OK to continue.
+;wb.wb.visible:=0
 setTimer,checkNotifications,10000
 return
 
