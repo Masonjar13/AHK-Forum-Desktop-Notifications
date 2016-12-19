@@ -14,9 +14,8 @@ class IEObj {
     init(){
         ;static url:="about:InPrivate"
         
-        run,% "Iexplore.exe -extoff -private",,,wbpid
+        run,% "Iexplore.exe -extoff -private -noframemerging",,,wbpid
         this.wbpid:=wbpid
-        winWait,% "ahk_pid " . this.wbpid
         while(!isObject(this.wb:=this.IEGetbyURL("about:InPrivate")))
             sleep 100
         this.wb.silent:=1
